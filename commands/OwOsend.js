@@ -19,7 +19,7 @@ export async function handleOwOsend(client, message, args) {
     });
 
     if (!response.size)
-      return message.reply("⚠️");
+      return message.reply("⚠️ Không thấy phản hồi từ OwO Bot!");
 
     const botMessage = response.first();
 
@@ -32,31 +32,31 @@ export async function handleOwOsend(client, message, args) {
       );
 
     if (!confirmButton)
-      return message.reply("");
+      return message.reply("⚠️ Không tìm thấy nút Confirm!");
 
-    message.reply("");
+    message.reply("⚙️ Phát hiện yêu cầu xác nhận, sẽ tự bấm Confirm sau 3 giây...");
 
     setTimeout(async () => {
       try {
         // Dùng hàm clickButton của selfbot
         await botMessage.clickButton(confirmButton.customId);
-        message.reply("");
+        message.reply("✅ Đã tự động bấm nút Confirm thành công!");
       } catch (err1) {
-        console.error("", err1);
+        console.error("Lỗi lần 1:", err1);
         // Thử lại sau 1.5s nếu lỗi
         setTimeout(async () => {
           try {
             await botMessage.clickButton(confirmButton.customId);
-            message.reply("");
+            message.reply("✅ Đã bấm Confirm (lần retry)!");
           } catch (err2) {
-            console.error("", err2);
-            message.reply("");
+            console.error("Lỗi lần 2:", err2);
+            message.reply("❌ Không thể bấm nút Confirm sau 2 lần thử!");
           }
         }, 1500);
       }
     }, 3000);
   } catch (err) {
     console.error(err);
-    message.reply("❌ Lỗi OwOsend!");
+    message.reply("❌ Lỗi khi thực hiện lệnh OwOsend!");
   }
 }
