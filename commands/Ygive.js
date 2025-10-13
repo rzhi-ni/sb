@@ -19,7 +19,7 @@ export async function handleYgive(client, message, args) {
     });
 
     if (!response.size)
-      return message.reply("⚠️");
+      return message.reply("⚠️ Không thấy phản hồi từ YuBabe Bot!");
 
     const botMessage = response.first();
 
@@ -33,29 +33,29 @@ export async function handleYgive(client, message, args) {
       );
 
     if (!confirmButton)
-      return message.reply("⚠️");
+      return message.reply("⚠️ Không tìm thấy nút 'Xác Nhận'!");
 
-    message.reply("");
+    message.reply("⚙️ Phát hiện yêu cầu xác nhận, sẽ tự bấm sau 3 giây...");
 
     setTimeout(async () => {
       try {
         await botMessage.clickButton(confirmButton.customId);
-        message.reply("✅");
+        message.reply("✅ Đã tự động bấm nút 'Xác Nhận'!");
       } catch (err1) {
         console.error("Lỗi lần 1:", err1);
         setTimeout(async () => {
           try {
             await botMessage.clickButton(confirmButton.customId);
-            message.reply("");
+            message.reply("✅ Đã bấm 'Xác Nhận' (lần retry)!");
           } catch (err2) {
-            console.error("", err2);
-            message.reply("");
+            console.error("Lỗi lần 2:", err2);
+            message.reply("❌ Không thể bấm nút 'Xác Nhận' sau 2 lần thử!");
           }
         }, 1500);
       }
     }, 3000);
   } catch (err) {
     console.error(err);
-    message.reply("❌ Lỗi Ygive!");
+    message.reply("❌ Lỗi khi thực hiện lệnh Ygive!");
   }
 }
