@@ -1,9 +1,9 @@
-// commands/OwOsend.js
+import { addPending } from "./Confirm.js";
+
 export async function handleOwOsend(client, message, args) {
   try {
     const target = args[0];
     const amount = args[1];
-
     if (!target || !amount)
       return message.reply("❌ Sai cú pháp! Dùng: !osend @aiđó <số tiền>");
 
@@ -19,42 +19,33 @@ export async function handleOwOsend(client, message, args) {
     });
 
     if (!response.size)
-      return message.reply("⚠️ Không thấy phản hồi từ OwO Bot!");
+      return message.reply("⚠️");
 
     const botMessage = response.first();
 
-    // Tìm nút "Confirm"
+    // Tìm nút Confirm
     const confirmButton = botMessage.components
-      ?.flatMap((row) => row.components)
-      ?.find((b) =>
-        b.label?.toLowerCase().includes("confirm") ||
-        b.emoji?.name === "✅"
+      ?.flatMap((r) => r.components)
+      ?.find(
+        (b) =>
+          b.label?.toLowerCase().includes("confirm") ||
+          b.emoji?.name === "✅"
       );
 
     if (!confirmButton)
-      return message.reply("⚠️ Không tìm thấy nút Confirm!");
+      return message.reply("⚠️");
 
-    message.reply("⚙️ Phát hiện yêu cầu xác nhận, sẽ tự bấm Confirm sau 3 giây...");
+    // Lưu pending để confirm.js xử lý
+    addPending({
+      type: "owo",
+      guildId: message.guild?.id,
+      channelId: message.channel.id,
+      authorId: message.author.id,
+      botMessage,
+      confirmButton,
+    });
 
-    setTimeout(async () => {
-      try {
-        // Dùng hàm clickButton của selfbot
-        await botMessage.clickButton(confirmButton.customId);
-        message.reply("✅ Đã tự động bấm nút Confirm thành công!");
-      } catch (err1) {
-        console.error("Lỗi lần 1:", err1);
-        // Thử lại sau 1.5s nếu lỗi
-        setTimeout(async () => {
-          try {
-            await botMessage.clickButton(confirmButton.customId);
-            message.reply("✅ Đã bấm Confirm (lần retry)!");
-          } catch (err2) {
-            console.error("Lỗi lần 2:", err2);
-            message.reply("❌ Không thể bấm nút Confirm sau 2 lần thử!");
-          }
-        }, 1500);
-      }
-    }, 3000);
+    await message.reply("⚙️ confirm✅.");
   } catch (err) {
     console.error(err);
     message.reply("❌ Lỗi khi thực hiện lệnh OwOsend!");
