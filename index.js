@@ -9,7 +9,9 @@ import pkg from "discord.js-selfbot-v13";
 const { Client } = pkg;
 
 import { handleOwOsend } from "./commands/OwOsend.js";
-import { handleYgive } from "./commands/Ygive.js";
+import { handleYsend } from "./commands/Ygive.js";
+import { handleSay } from "./commands/say.js"; 
+import { handleConfirm } from "./commands/Confirm.js";
 
 const CONFIG_PATH = path.join(process.cwd(), "config.json");
 
@@ -154,7 +156,10 @@ async function runBotWithAccount(acc) {
 
     try {
       if (cmd === "osend") await handleOwOsend(client, message, args);
-      else if (cmd === "ysend") await handleYgive(client, message, args);
+      else if (cmd === "ysend") await handleYsend(client, message, args);
+      else if (cmd === "say") await handleSay(client, message, args);
+      else if (cmd === "confirm") await handleConfirm(client, message);
+
     } catch (err) {
       console.error("❌ Lỗi khi xử lý lệnh:", err);
     }
