@@ -12,7 +12,6 @@ import { handleOwOsend } from "./commands/OwOsend.js";
 import { handleYsend } from "./commands/Ygive.js";
 import { handleSay } from "./commands/say.js"; 
 import { handleConfirm } from "./commands/Confirm.js";
-import { handleAskGPT, conversationHistory } from "./commands/askgpt.js";
 import { loadPresence } from "./commands/presence.js"
 
 const CONFIG_PATH = path.join(process.cwd(), "config.json");
@@ -162,7 +161,6 @@ async function runBotWithAccount(acc) {
       else if (cmd === "ysend") await handleYsend(client, message, args);
       else if (cmd === "say") await handleSay(client, message, args);
       else if (cmd === "confirm") await handleConfirm(client, message);
-      else if (cmd === "g") await handleAskGPT(client, message, args);
       else if (cmd === "reset") {
         conversationHistory.delete(message.author.id);
         await message.reply("🧹 Đã xóa hội thoại cũ. Bắt đầu cuộc trò chuyện mới!");
@@ -223,4 +221,5 @@ async function runBotWithAccount(acc) {
     }
   }
 })();
+
 
