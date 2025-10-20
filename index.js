@@ -12,6 +12,8 @@ import { handleOwOsend } from "./commands/OwOsend.js";
 import { handleYsend } from "./commands/Ygive.js";
 import { handleSay } from "./commands/say.js"; 
 import { handleConfirm } from "./commands/Confirm.js";
+import { handleAskGPT, conversationHistory } from "./commands/askgpt.js";
+import { loadPresence } from "./commands/presence.js"
 
 const CONFIG_PATH = path.join(process.cwd(), "config.json");
 
@@ -142,6 +144,7 @@ async function runBotWithAccount(acc) {
 
   client.once("ready", () => {
     console.log(`✅ Đăng nhập thành công: ${client.user.tag} (${client.user.id})`);
+    
   });
 
   client.on("messageCreate", async (message) => {
@@ -159,9 +162,17 @@ async function runBotWithAccount(acc) {
       else if (cmd === "ysend") await handleYsend(client, message, args);
       else if (cmd === "say") await handleSay(client, message, args);
       else if (cmd === "confirm") await handleConfirm(client, message);
-
+      else if (cmd === "g") await handleAskGPT(client, message, args);
+      else if (cmd === "reset") {
+        conversationHistory.delete(message.author.id);
+        await message.reply("🧹 Đã xóa hội thoại cũ. Bắt đầu cuộc trò chuyện mới!");
+    }
     } catch (err) {
       console.error("❌ Lỗi khi xử lý lệnh:", err);
+      await message.reply({
+        content: `⚠️ Lỗi: ${err.message}`,
+        allowedMentions: { repliedUser: false },
+      }).catch(() => {});
     }
   });
 
@@ -170,6 +181,10 @@ async function runBotWithAccount(acc) {
     console.warn(`⚠️ Mất kết nối: ${acc.name}, đang thử đăng nhập lại sau 10s...`);
     setTimeout(() => client.login(acc.token).catch(() => {}), 10000);
   });
+
+  client.on("ready", async () => {
+    await loadPresence(client); // ⬅ Gọi tự động bật Rich Presence
+});
 
   // Auto restart nếu lỗi
   client.on("error", (err) => {
