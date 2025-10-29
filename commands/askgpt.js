@@ -3,7 +3,7 @@ import OpenAI from "openai";
 
 
 const openai = new OpenAI({
-  apiKey: "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",
+  apiKey: "",
 });
 
 
@@ -59,4 +59,5 @@ export async function handleAskGPT(client, message, args) {
     }).catch(() => {});
   }
 }
+
 
